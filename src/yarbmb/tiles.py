@@ -38,6 +38,3 @@ def parse_hand(s: str) -> list[Tile]:
         for n in nums[i]:
             hand.append(parse_tile(f"{n}{suit}"))
     return hand
-
-
-print(parse_hand("123p456s567z223m"))
