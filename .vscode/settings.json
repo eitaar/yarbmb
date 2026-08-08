@@ -16,5 +16,8 @@
   "python.analysis.inlayHints.variableTypes": true,
   "python.analysis.inlayHints.callArgumentNames": "partial",
 
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "cSpell.words": [
+    "shanten"
+  ]
 }

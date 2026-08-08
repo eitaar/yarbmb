@@ -8,6 +8,8 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "ipykernel>=7.3.0",
+    "jupyter>=1.1.1",
     "mahjong>=2.0.0",
     "riichienv>=0.4.8",
 ]

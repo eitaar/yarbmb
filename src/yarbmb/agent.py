@@ -1,45 +1,49 @@
-from dataclasses import dataclass
-
 from riichienv import Action, ActionType, Observation, calculate_shanten
 
 
-@dataclass
 class MyAgent:
     """Your bot agent. Implement act() to return an Action."""
 
-    def act(self, obs: Observation, pid: int) -> Action:
+    isRiichi = False
+
+    def act(self, obs: Observation) -> Action:
         actions = obs.legal_actions()
 
-        # 1. Win if possible
+        # Win if possible
         for a in actions:
             if a.action_type == ActionType.Tsumo or a.action_type == ActionType.Ron:
-                print("Winning...")
+                print("----------\nWin\n----------")
                 return a
 
-        # 2. Declare riichi if possible
+        # Declare riichi if possible
         for a in actions:
             if a.action_type == ActionType.Riichi:
-                print("Declaring riichi...")
+                self.isRiichi = True
+                print("----------\nRiichi\n----------")
                 return a
 
-        # 3. Discard the tile that minimizes shanten
-        discards = [a for a in actions if a.action_type == ActionType.Discard]
-        if discards:
-            hand = list(obs.hand)
-            shanten_list = [calculate_shanten(hand[:i] + hand[i + 1 :]) for i in range(len(hand))]
-            best = shanten_list.index(min(shanten_list))
+        discards = list(filter(lambda a: a.action_type == ActionType.Discard, actions))
+        if self.isRiichi and discards:
+            for a in discards:
+                if a.tile == obs.drawn_tile:
+                    print("Discarding: ", obs.drawn_tile)
+                    print("----")
+                    return a
+        if not discards:
+            return Action(ActionType.Pass)
+        for a in discards:
+            print("Discard Possible:", a.tile)
 
-            if pid == 0:
-                print("My hand:", hand)
-                print("Shanten per discard:", shanten_list)
-                print("Discarding:", hand[best])
-                print("----")
+        print("My hand:", obs.hand)
+        shantenList = []
+        for i in range(len(obs.hand)):
+            tmp = list(obs.hand)
+            tmp.pop(i)
+            shantenList.append(calculate_shanten(tmp))
 
-            return Action(ActionType.Discard, hand[best])
+        print(shantenList)
+        discardTile = shantenList.index(min(shantenList))
+        print("Discarding: ", obs.hand[discardTile])
+        print("----")
 
-        # 4. Reaction phase: pass
-        for a in actions:
-            if a.action_type == ActionType.Pass:
-                return a
-
-        return Action(ActionType.Pass)
+        return Action(ActionType.Discard, obs.hand[discardTile])

@@ -1,13 +1,14 @@
 import datetime
 import json
+import random
 
 from riichienv import RiichiEnv
 
 from yarbmb.agent import MyAgent
 
 agent = MyAgent()
-
-env = RiichiEnv(game_mode="4p-red-half", seed=42)
+seed = random.randint(0, 100)
+env = RiichiEnv(game_mode="4p-red-half", seed=seed)
 
 observations = env.reset()
 
@@ -21,7 +22,7 @@ while not env.done():
     #         print("My hand:", formatHand(obs.hand))
 
     # AIに行動を決めさせる
-    actions = {pid: agent.act(obs, pid) for pid, obs in observations.items()}
+    actions = {pid: agent.act(obs) for pid, obs in observations.items()}
 
     # ゲームを1ステップ進める
     observations = env.step(actions)
@@ -33,3 +34,6 @@ filename = f"match_logs/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.
 with open(filename, "w", encoding="utf-8") as f:
     for event in env.mjai_log:
         f.write(json.dumps(event, ensure_ascii=False) + "\n")
+
+print(f"Log saved to {filename}")
+print("seed: ", seed)
